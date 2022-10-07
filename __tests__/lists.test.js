@@ -46,6 +46,6 @@ describe('user routes', () => {
     expect(res.status).toBe(200);
 
     const resp = await agent.get('/api/v1/lists');
-    expect(resp.body).toEqual({ ...list, id: '1', user_id: '1' });
+    expect(resp.body).toEqual([{ ...list, id: '1', user_id: '1' }]);
   });
 });
