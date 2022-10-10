@@ -48,4 +48,12 @@ describe('user routes', () => {
     const resp = await agent.get('/api/v1/lists');
     expect(resp.body).toEqual([{ ...list, id: '1', user_id: '1' }]);
   });
+  it('DELETE removes an item from the user list', async () => {
+    const [agent] = await registerAndLogin();
+    const list = { description: 'clean the car', completed: false };
+    const res = await agent.post('/api/v1/lists').send(list);
+    await agent.delete(`/api/v1/lists/${res.body.id}`);
+    console.log('res.body.id', res.body.id);
+    expect(res.body).toBe(null);
+  });
 });
