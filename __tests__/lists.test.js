@@ -53,7 +53,7 @@ describe('user routes', () => {
     const list = { description: 'clean the car', completed: false };
     const res = await agent.post('/api/v1/lists').send(list);
     await agent.delete(`/api/v1/lists/${res.body.id}`);
-    console.log('res.body.id', res.body.id);
-    expect(res.body).toBe(null);
+    const resp = await agent.get('/api/v1/lists');
+    expect(resp.body).toEqual([]);
   });
 });
