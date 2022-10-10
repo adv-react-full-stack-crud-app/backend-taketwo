@@ -61,8 +61,11 @@ describe('user routes', () => {
     const list = { description: 'clean the car', completed: false };
     const res = await agent.post('/api/v1/lists').send(list);
 
-    await agent.put(`/api/v1/lists/${res.body.id}`).send({ completed: true });
-    expect(res.body).toEqual({
+    const resp = await agent
+      .put(`/api/v1/lists/${res.body.id}`)
+      .send({ completed: true });
+    // const resp = await agent.get(`/api/v1/lists/${res.body.id}`);
+    expect(resp.body).toEqual({
       ...res.body,
       completed: true,
     });
