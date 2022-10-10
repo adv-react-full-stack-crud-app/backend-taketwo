@@ -56,4 +56,15 @@ describe('user routes', () => {
     const resp = await agent.get('/api/v1/lists');
     expect(resp.body).toEqual([]);
   });
+  it('PUT updates list item', async () => {
+    const [agent] = await registerAndLogin();
+    const list = { description: 'clean the car', completed: false };
+    const res = await agent.post('/api/v1/lists').send(list);
+
+    await agent.put(`/api/v1/lists/${res.body.id}`).send({ completed: true });
+    expect(res.body).toEqual({
+      ...res.body,
+      completed: true,
+    });
+  });
 });
