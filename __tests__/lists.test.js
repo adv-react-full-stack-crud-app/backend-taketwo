@@ -13,7 +13,7 @@ const mockUser = {
 
 const registerAndLogin = async (userProps = {}) => {
   const password = userProps.password ?? mockUser.password;
-  
+
   const agent = request.agent(app);
   const user = await UserService.create({ ...mockUser, ...userProps });
   const { email } = user;
@@ -28,18 +28,46 @@ describe('user routes', () => {
   afterAll(() => {
     pool.end();
   });
-    
+
   it('POST user can add item to list', async () => {
     const itemObject = {
       description: 'Clean shower',
-      completed: false
+      completed: false,
     };
 
     const [agent] = await registerAndLogin();
     const res = await agent.post('/api/v1/lists').send(itemObject);
     expect(res.status).toEqual(200);
-
   });
+  it('GET displays all list items', async () => {
+    const [agent] = await registerAndLogin();
+    const list = { description: 'clean the car', completed: false };
+    const res = await agent.post('/api/v1/lists').send(list);
+    expect(res.status).toBe(200);
 
+    const resp = await agent.get('/api/v1/lists');
+    expect(resp.body).toEqual([{ ...list, id: '1', user_id: '1' }]);
+  });
+  it('DELETE removes an item from the user list', async () => {
+    const [agent] = await registerAndLogin();
+    const list = { description: 'clean the car', completed: false };
+    const res = await agent.post('/api/v1/lists').send(list);
+    await agent.delete(`/api/v1/lists/${res.body.id}`);
+    const resp = await agent.get('/api/v1/lists');
+    expect(resp.body).toEqual([]);
+  });
+  it('PUT updates list item', async () => {
+    const [agent] = await registerAndLogin();
+    const list = { description: 'clean the car', completed: false };
+    const res = await agent.post('/api/v1/lists').send(list);
 
+    const resp = await agent
+      .put(`/api/v1/lists/${res.body.id}`)
+      .send({ completed: true });
+    // const resp = await agent.get(`/api/v1/lists/${res.body.id}`);
+    expect(resp.body).toEqual({
+      ...res.body,
+      completed: true,
+    });
+  });
 });
